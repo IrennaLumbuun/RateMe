@@ -10,6 +10,9 @@ cmake==3.17.3
 constantly==15.1.0
 cryptography==2.9.2
 cssselect==1.1.0
+dlib==19.20.0
+face-recognition==1.3.0
+face-recognition-models==0.3.0
 hyperlink==19.0.0
 idna==2.10
 incremental==17.5.0
@@ -17,6 +20,7 @@ itemadapter==0.1.0
 lxml==4.5.1
 numpy==1.19.0
 parsel==1.6.0
+Pillow==7.2.0
 Protego==0.1.16
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
