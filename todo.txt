@@ -1,5 +1,5 @@
 TODO:
-1. make a webscraper to get data on foto link & score
-2. download photos and put it to respective foler?
+1. (ok) make a webscraper to get data on foto link & score 
+2. (ok - get encoding instead) download photos and put it to respective foler? 
 3. train machine learning
 4. build a front end for users to upload images
