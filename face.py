@@ -36,7 +36,7 @@ def get_face(url: str) -> list:
     polled_image = face_recognition.load_image_file(polled_image_path)
     face_encodings  = face_recognition.face_encodings(polled_image)
     
-    return face_encodings
+    return face_encodings[0]
 
 #see more https://www.youtube.com/watch?v=QSTnwsZj2yc
 # or https://medium.com/better-programming/step-by-step-face-recognition-in-images-ad0ad302058a
