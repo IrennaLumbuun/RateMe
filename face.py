@@ -2,42 +2,33 @@ import face_recognition
 from PIL import Image, ImageDraw
 import urllib.request
 import ssl
-
+import cv2
 
 '''
     Load image from url & save it
 '''
 
 context = ssl._create_unverified_context()
-url = 'https://preview.redd.it/0jzy2kgbhb851.jpg?width=640&crop=smart&auto=webp&s=3d9e423ba3cf5bb8c2c842b52245c63c8ff29901'
+url = 'https://preview.redd.it/l2o5vkkf8k851.jpg?width=640&crop=smart&auto=webp&s=6f0f279f2ee32da5218946078c537a68dc579864'
+face_cascade = cv2.CascadeClassifier('./haarcascades/haarcascade_frontalface_alt2.xml')
 
 def get_face(url: str) -> list:
     image = Image.open(urllib.request.urlopen(url, context=context))
-    # TODO: save this in cloud database
-    image_path = 'test.jpg'
+    image_path = './test.jpg'
     image.save(image_path)
 
     # get face location
-    image = face_recognition.load_image_file(image_path)
-    face_location = face_recognition.face_locations(image)
-    print(face_location)
+    img = cv2.imread(image_path, 0)
+    faces = face_cascade.detectMultiScale(img, scaleFactor=1.5, minNeighbors=5)
 
-    '''
-        Poll face from image & save it
-    '''
-    top, right, bottom, left = face_location[0]
-    face_image = image[top:bottom, left:right]
-    polled_image = Image.fromarray(face_image)
-
-    # TODO: save this in cloud database
-    polled_image_path = 'polled_test.jpg'
-    polled_image.save(polled_image_path)
-
-    polled_image = face_recognition.load_image_file(polled_image_path)
-    face_encodings  = face_recognition.face_encodings(polled_image)
+    roi_list = [] # roi = region of interest (i.e the face only)
+    for x, y, w, h in faces:
+        roi = img[y:y+h, x:x+w] # get only the face region
+        roi_list.append(roi)
+        cv2.imwrite('polled_test.jpg', roi)
     
-    return face_encodings[0]
+    return roi_list
 
+get_face(url)
 #see more https://www.youtube.com/watch?v=QSTnwsZj2yc
 # or https://medium.com/better-programming/step-by-step-face-recognition-in-images-ad0ad302058a
-

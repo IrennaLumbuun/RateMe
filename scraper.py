@@ -12,6 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 from face import get_face
+import numpy as np
 
 url = 'https://www.reddit.com/r/truerateme/'
 
@@ -47,7 +48,6 @@ class Crawler():
                 self.close_window()
                 continue
 
-            # TODO: continue saving all images
             index = 0
             for i in images:
                 src = i.get_attribute('src')
@@ -82,10 +82,8 @@ class Crawler():
                 continue
             # skip links to simplify the code
             if 'http' in text.lower():
-                print('http')
                 continue
             if 'rule' in text.lower() or 'guide' in text.lower():
-                print('rule')
                 continue
 
             dec_list = re.findall('\d+\.?\d*', text)
@@ -104,12 +102,12 @@ class Crawler():
         return comments_with_score, total_score/comments_with_score
 
 
-    def write_to_file(self, writer, url: str, encoding: list, count: int, avg: float):
+    def write_to_file(self, writer, url: str, encoding: np.ndarray, count: int, avg: float):
         #   date, image_url, image_encoding, count_rating, avg_rating
         date = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
         if url == '' or encoding == [] or count == 0 or avg == 0.0:
             return
-        writer.writerow([date, url, encoding, count, avg])
+        writer.writerow([date, url, np.asarray(encoding), count, avg])
 
     def close_window(self):
         try:
@@ -124,15 +122,24 @@ class Crawler():
 crawler = Crawler()
 crawler.driver.get('https://www.reddit.com/r/truerateme/')
 
-''' uncomment when not on testing mode
-for loop in range(0, 50):
-    # wait for it to load
-    print('scrolling...')
-    # Scroll down so Selenium can parse more stuffs
+#scroll to the bottom of the page
+SCROLL_PAUSE_TIME = 0.5
+
+# Get scroll height
+last_height = crawler.driver.execute_script("return document.body.scrollHeight")
+'''
+while True:
+    # Scroll down to bottom
     crawler.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-#go back to the top of the page
-crawler.driver.execute_script("window.scrollTo(0, 0);")
-'''
+    # Wait to load page
+    sleep(SCROLL_PAUSE_TIME)
 
+    # Calculate new scroll height and compare with last scroll height
+    new_height = crawler.driver.execute_script("return document.body.scrollHeight")
+    if new_height == last_height:
+        break
+    last_height = new_height
+'''
+crawler.driver.execute_script("window.scrollTo(0, 0);")
 crawler.get_data()
