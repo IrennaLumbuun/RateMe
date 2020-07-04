@@ -134,11 +134,11 @@ crawler = Crawler()
 crawler.driver.get('https://www.reddit.com/r/truerateme/')
 
 #scroll to the bottom of the page
-SCROLL_PAUSE_TIME = 0.5
+SCROLL_PAUSE_TIME = 5
 
 # Get scroll height
 last_height = crawler.driver.execute_script("return document.body.scrollHeight")
-'''
+
 while True:
     # Scroll down to bottom
     crawler.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -151,6 +151,6 @@ while True:
     if new_height == last_height:
         break
     last_height = new_height
-'''
+
 crawler.driver.execute_script("window.scrollTo(0, 0);")
 crawler.get_data()
