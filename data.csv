@@ -1,7 +1,0 @@
-retrieved_date,image_url,image_address,count_rating,avg_rating
-2020-07-03-20:31:01,https://preview.redd.it/xtsfss8uzn851.jpg?width=640&crop=smart&auto=webp&s=aaa0e461ccab4e2c0f7ea08c18619cfca69dd427,./data/1_31_1.jpg,5,4.4
-2020-07-03-20:31:13,https://preview.redd.it/rj0t5aovto851.jpg?width=960&crop=smart&auto=webp&s=4db72d2984e94886ef74fdc195ec1d1df6d118cb,./data/1_31_12.jpg,1,2.0
-2020-07-03-20:31:13,https://preview.redd.it/rj0t5aovto851.jpg?width=960&crop=smart&auto=webp&s=4db72d2984e94886ef74fdc195ec1d1df6d118cb,./data/2_31_12.jpg,1,2.0
-2020-07-03-20:31:17,https://preview.redd.it/o4acwae7dq851.jpg?width=640&crop=smart&auto=webp&s=896772afdafdc67978e77ad78affdd670171638a,./data/1_31_17.jpg,2,5.5
-2020-07-03-20:31:21,https://preview.redd.it/ossx7x1gnn851.jpg?width=960&crop=smart&auto=webp&s=eeb5a6122367bddfb64b0007e907ec0fe2ad678d,./data/1_31_21.jpg,7,5.428571428571429
-2020-07-03-20:31:21,https://preview.redd.it/ossx7x1gnn851.jpg?width=960&crop=smart&auto=webp&s=eeb5a6122367bddfb64b0007e907ec0fe2ad678d,./data/2_31_21.jpg,7,5.428571428571429
