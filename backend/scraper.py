@@ -13,6 +13,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 from face import save_face, open_url
+from predictor import train
 import numpy as np
 
 url = 'https://www.reddit.com/r/truerateme/'
@@ -132,7 +133,7 @@ class Crawler():
     
             
 crawler = Crawler()
-crawler.driver.get('https://www.reddit.com/r/truerateme/')
+crawler.driver.get(url)
 '''
 #scroll to the bottom of the page
 SCROLL_PAUSE_TIME = 5
@@ -155,3 +156,4 @@ while True:
 
 crawler.driver.execute_script("window.scrollTo(0, 0);")'''
 crawler.get_data()
+train()

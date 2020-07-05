@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_monitor import Monitor, ObserverLog
 from werkzeug.utils import secure_filename
+from PIL import Image
+import cv2
 import logging
+import numpy as np
 from backend.face import *
 
 app =  Flask(__name__)
@@ -21,8 +24,15 @@ def landing_page():
             redirect('home.html')
         if user_photo and allowed_file(user_photo.filename):
             filename = secure_filename(user_photo.filename)
-            print(type(user_photo))
-            print('valid file and filename')
+            img = Image.open(user_photo)
+            img = np.array(img)
+            print(img.shape)
+
+            img = analyse_user_face(img)
+            cv2.imshow('image', img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
         # TODO: redirect to result
     return render_template('home.html')
 

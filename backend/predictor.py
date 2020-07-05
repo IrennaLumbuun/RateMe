@@ -10,7 +10,11 @@ import pickle
 def image_to_array(img):
     img = image.img_to_array(img)
     img = img / 255
-    img = np.asarray(img).reshape(-1)
+    img = np.asarray(img)
+    img = img[:, :, 0] #reduce to a 2D greyscale image
+    print(img.shape)
+    img = img.reshape(-1)
+    print(img.shape)
     return img
 
 def train():
@@ -18,7 +22,8 @@ def train():
     train_image = []
     for i in range(train.shape[0]):
         img = image.load_img(train['image_address'][i])
-        image_to_array(img)
+        img = image_to_array(img)
+        print(img.shape)
         train_image.append(img)
 
     x = np.array(train_image, dtype=object)
@@ -28,14 +33,11 @@ def train():
     best = 0
     for _ in range(20):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
-
         linear = LinearRegression()
         linear.fit(x_train, y_train)
         acc = linear.score(x_test, y_test)
         print("Accuracy: " + str(acc))
         
-        # step 4: saving model
-        # -----------------------------------------------
         # If the current model has a better score than one we've already trained then save it
         if acc > best:
             best = acc
@@ -48,5 +50,10 @@ def predict(img):
     linear = pickle.load(pickle_in)
 
     img = image_to_array(img)
-    predicted= linear.predict(img)
+    img = np.array([img], dtype=object)
+    print(img.shape)
+    #img = img.reshape(1, -1)
+    #print(img.shape)
+    predicted = linear.predict(img)
     print(predicted)
+    return predicted[0]

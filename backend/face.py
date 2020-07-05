@@ -1,18 +1,18 @@
-from PIL import Image, ImageDraw
+from PIL import Image
 import urllib.request
 import ssl
 import cv2
 import time
 import os
-#from predictor import predict
+from predictor import predict
+import math
 
 '''
     Load image from url & save it
 '''
 
 context = ssl._create_unverified_context()
-url = 'https://preview.redd.it/l2o5vkkf8k851.jpg?width=640&crop=smart&auto=webp&s=6f0f279f2ee32da5218946078c537a68dc579864'
-face_cascade = cv2.CascadeClassifier('../haarcascades/haarcascade_frontalface_alt2.xml')
+face_cascade = cv2.CascadeClassifier('./haarcascades/haarcascade_frontalface_alt2.xml')
 
 def open_url(url: str) -> str:
     # make a directory
@@ -21,6 +21,7 @@ def open_url(url: str) -> str:
 
     # open & save image
     image = Image.open(urllib.request.urlopen(url, context=context))
+    image = image.convert('RGB') #if an image was blured / in an rgba format
     image_path = './temp.jpg'
     image.save(image_path)
 
@@ -46,11 +47,15 @@ def save_face(image_path: str) -> list:
     return roi_list
 
 def analyse_user_face(img):
-    img = cv2.cvtColot(img, cv2.COLOR_BGR2GRAY)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(img, scaleFactor=1.5, minNeighbors=5)
     for x, y, w, h in faces:
         roi = img[y:y+h, x:x+w] # get only the face region
-        roi = cv2.resize(roi, (150, 150))
+        roi = cv2.resize(roi, (math.sqrt(67500), math.sqrt(67500)))
+        score = predict(roi)
+        img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 2)
+        img = cv2.putText(img, score, (x, y + h + 10), cv2.FONT_HERSHEY_PLAIN, 2, (0,0,0), cv2.LINE_AA)
+        return img
 
 #save_face(url)
 #see more https://www.youtube.com/watch?v=QSTnwsZj2yc
