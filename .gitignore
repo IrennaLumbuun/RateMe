@@ -6,3 +6,7 @@ todo.txt
 # broken predictor
 train.py
 model.py
+
+# user data
+data
+data.csv

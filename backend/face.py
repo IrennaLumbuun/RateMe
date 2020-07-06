@@ -47,16 +47,19 @@ def save_face(image_path: str) -> list:
     return roi_list
 
 def analyse_user_face(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(img, scaleFactor=1.5, minNeighbors=5)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
     if faces == []:
         return None
     for x, y, w, h in faces:
-        roi = img[y:y+h, x:x+w] # get only the face region
+        roi = gray[y:y+h, x:x+w] # get only the face region
         roi = cv2.resize(roi, (150, 150))
         score = predict(roi)
-        img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 2)
-        img = cv2.putText(img, str(score), (x, y + h + 10), cv2.FONT_HERSHEY_SIMPLEX, 2, color=(0,0,0), thickness=2)
+
+        # add rectangle and label
+        img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 5)
+        img = cv2.putText(img, str(round(score, 1)), (x, y + h + 30), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(0,0,0), thickness=2)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         return img
 
 #save_face(url)
