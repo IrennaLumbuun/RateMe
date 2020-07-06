@@ -26,12 +26,10 @@ def landing_page():
             filename = secure_filename(user_photo.filename)
             img = Image.open(user_photo)
             img = np.array(img)
-            print(img.shape)
-
             img = analyse_user_face(img)
-            cv2.imshow('image', img)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            if img != None:
+                return render_template('result.html', img=img, error='')
+        #TODO: handle if return value is None (didn't see a face)
 
         # TODO: redirect to result
     return render_template('home.html')
@@ -41,10 +39,6 @@ _allowed_extensions = {'pdf', 'png', 'jpg', 'jpeg'}
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in _allowed_extensions
-
-@app.route('/result')
-def show_result():
-    return 'html result page'
 
 if __name__ == '__main__':
     app.secret_key = 'randomsecretkey'

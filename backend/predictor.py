@@ -12,9 +12,7 @@ def image_to_array(img):
     img = img / 255
     img = np.asarray(img)
     img = img[:, :, 0] #reduce to a 2D greyscale image
-    print(img.shape)
     img = img.reshape(-1)
-    print(img.shape)
     return img
 
 def train():
@@ -23,7 +21,6 @@ def train():
     for i in range(train.shape[0]):
         img = image.load_img(train['image_address'][i])
         img = image_to_array(img)
-        print(img.shape)
         train_image.append(img)
 
     x = np.array(train_image, dtype=object)
@@ -51,9 +48,5 @@ def predict(img):
 
     img = image_to_array(img)
     img = np.array([img], dtype=object)
-    print(img.shape)
-    #img = img.reshape(1, -1)
-    #print(img.shape)
     predicted = linear.predict(img)
-    print(predicted)
     return predicted[0]

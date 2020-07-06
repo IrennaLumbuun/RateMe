@@ -134,9 +134,9 @@ class Crawler():
             
 crawler = Crawler()
 crawler.driver.get(url)
-'''
+
 #scroll to the bottom of the page
-SCROLL_PAUSE_TIME = 5
+SCROLL_PAUSE_TIME = 0.5
 
 # Get scroll height
 last_height = crawler.driver.execute_script("return document.body.scrollHeight")
@@ -154,6 +154,6 @@ while True:
         break
     last_height = new_height
 
-crawler.driver.execute_script("window.scrollTo(0, 0);")'''
+crawler.driver.execute_script("window.scrollTo(0, 0);")
 crawler.get_data()
 train()
