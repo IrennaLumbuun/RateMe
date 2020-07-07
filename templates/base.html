@@ -20,10 +20,30 @@
     {% block body %} {% endblock %}
     <section id='how-it-works'>
         <h1 class="text-center">How it works</h1>
-        <p>I first built a webscraper to collect images from <em>r/TrueRateMe</em>, encoded them, and get the average rating. Then, I built a linear regression ML program to make a model and predict another set of data
-            <br>
-            On the front-end side of things, this site is built using HTML/CSS, bootstrap, and served by Python Flask.
+        <p>Data is collected from <a href='https://www.reddit.com/r/truerateme/'><em>r/TrueRateMe</em></a>. We managed to collect x amount of data -- which is then fed to a linear regression machine learning algorithm.
+        <br>
+        <em>r/TrueRateMe</em> has a rating guidelines (see below) that puts 90% of people on score 4 - 6 out of 10.
+        <br>
+        Here is the guidelines, retrieved on <b>July 6th 2020</b>:
         </p>
+        <p>
+            <button class="btn btn-light btn-outline-dark" type="button" data-toggle="collapse" data-target="#male-guideline" aria-expanded="false" aria-controls="male-guideline">
+              See male guidelines
+            </button>
+            <button class="btn btn-light btn-outline-dark" type="button" data-toggle="collapse" data-target="#female-guideline" aria-expanded="false" aria-controls="female-guideline">
+                See female guidelines
+              </button>
+          </p>
+          <div class="collapse" id="male-guideline">
+            <a href='https://i.imgur.com/1EpSoNB.jpg'>
+                <img src='../static/male.jpg' class='col-xs-12 col-sm-12 col-md-12 text-center'>
+            </a>
+          </div>
+          <div class="collapse" id="female-guideline">
+            <a href='https://i.imgur.com/YlBqElb.png'>
+                <img src='../static/female.png' class='col-xs-12 col-sm-12 col-md-12 text-center'>
+            </a>
+          </div>
     </section>
     <section id='possible-error-cause'>
         <h1 class="text-center">Possible error cause</h1>

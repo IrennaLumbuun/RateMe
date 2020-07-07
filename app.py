@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, make_response
 from PIL import Image
 import cv2
-import logging
 import base64
 import numpy as np
 from backend.face import *
@@ -15,29 +14,31 @@ def landing_page():
     # process incoming files
     if request.method == 'POST':
         if 'file' not in request.files:
-            logging.error('no file')
-            # TODO: alert user if no file is found
+            return render_template('home.html', error='No file selected')
+        
         user_photo = request.files['file']
         if user_photo.filename == '':
-            logging.error('No photo selected')
-            # TODO: alert user if no file name
-            redirect('home.html')
-        if user_photo and allowed_file(user_photo.filename):
+            return render_template('home.html', error='No photo selected')
+
+        valid_extension = allowed_file(user_photo.filename)
+        if not valid_extension:
+            return render_template('home.html', error='Extension is not valid. Only allow .png, .jpg, and .jpeg')
+       
+        if user_photo and valid_extension:
             img = Image.open(user_photo)
             img = np.array(img)
-            img = analyse_user_face(img)
-            if img != []:
+            score, img = analyse_user_face(img)
+            if img != [] and img != None:
                 _, buffer = cv2.imencode('.jpeg', img)
                 b64 = base64.b64encode(buffer)
-                return render_template('result.html', img=b64.decode('utf-8'), error='')
-        #TODO: handle if return value is None (didn't see a face)
-
-        # TODO: redirect to result
-    return render_template('home.html')
+                return render_template('result.html', img=b64.decode('utf-8'), score=score)
+            else:
+                return render_template('home.html', error='Can\'t find a face in the picture')
+    return render_template('home.html', error ='')
 
 _allowed_extensions = {'pdf', 'png', 'jpg', 'jpeg'}
 
-def allowed_file(filename):
+def allowed_file(filename) -> bool:
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in _allowed_extensions
 

@@ -15,13 +15,19 @@
         <input type='file' name='file' id='file-input'> </label>
         <p class="help-block">Some helper instruction about image size?</p>
     </div>
-    <div class="checkbox">
+   <!-- <div class="checkbox">
+        
         <label for='data-consent'>
             <input type='checkbox' name='data-consent' id='data-consent' checked>
             Allow TrueRateMe use my data to improve prediction accuracy
         </label>
-    </div>
-    <input type='submit' class="btn btn-light btn-block" value='Upload'></button>
+    </div>-->
+    {% if error != '' %}
+    <div class="alert alert-danger" role="alert">
+        {{error}}
+      </div>
+    {% endif %}
+    <input type='submit' class="btn btn-light btn-outline-dark btn-block" value='Upload'></button>
 </form>
 </section>
 

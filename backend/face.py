@@ -50,7 +50,8 @@ def analyse_user_face(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
     if faces == []:
-        return None
+        return []
+    #TODO: return a list of faces and their respective scores inistead
     for x, y, w, h in faces:
         roi = gray[y:y+h, x:x+w] # get only the face region
         roi = cv2.resize(roi, (150, 150))
@@ -60,7 +61,7 @@ def analyse_user_face(img):
         img = cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), thickness=10)
         img = cv2.putText(img, str(round(score, 1)), (x + 75, y + h + 150), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(255,255,255), thickness=5)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        return img
+        return img, score
 
 #save_face(url)
 #see more https://www.youtube.com/watch?v=QSTnwsZj2yc
