@@ -1,21 +1,28 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Edit</title>
+<title>RateMe</title>
 
 {% endblock %}
 
 
 {% block body %} 
-<div id='upload-picture'>
-<h1>Upload a picture</h1>
+<section id='upload-picture'>
+<h1 class="text-center">Upload a picture</h1>
 <form method=post enctype=multipart/form-data> 
-    <label>Select a file:</label>
-    <input type='file' name='file'>
-    <input type='submit' value='Upload'>
-    <input type='checkbox' name='data-consent'>
-    <label for='data-consent'>Allow TrueRateMe use my data to improve prediction accuracy</label>
+    <div class ="form-group">
+        <label for='file-input'>Select a file:
+        <input type='file' name='file' id='file-input'> </label>
+        <p class="help-block">Some helper instruction about image size?</p>
+    </div>
+    <div class="checkbox">
+        <label for='data-consent'>
+            <input type='checkbox' name='data-consent' id='data-consent' checked>
+            Allow TrueRateMe use my data to improve prediction accuracy
+        </label>
+    </div>
+    <input type='submit' class="btn btn-light btn-block" value='Upload'></button>
 </form>
-</div>
+</section>
 
 {% endblock %}

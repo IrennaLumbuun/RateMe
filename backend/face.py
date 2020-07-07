@@ -57,8 +57,8 @@ def analyse_user_face(img):
         score = predict(roi)
 
         # add rectangle and label
-        img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 5)
-        img = cv2.putText(img, str(round(score, 1)), (x, y + h + 30), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(0,0,0), thickness=2)
+        img = cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), thickness=10)
+        img = cv2.putText(img, str(round(score, 1)), (x + 75, y + h + 150), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(255,255,255), thickness=5)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         return img
 

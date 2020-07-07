@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>RateMe</title>
+
+{% endblock %}
+
+
+{% block body %} 
+<section id='show-picture'>
+    <h1 class="text-center">Result:</h1>
+    <img src='data:image/jpeg;base64,{{img}}' 
+        class='col-xs-12 col-sm-8 col-md-8'>
+</section>
+
+{% endblock %}
