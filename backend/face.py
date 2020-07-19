@@ -7,6 +7,7 @@ import os
 import io
 from predictor import predict
 import math
+import base64
 
 import importlib
 # Imports the Google Cloud client library
@@ -20,58 +21,7 @@ from google.protobuf.json_format import MessageToDict
 
 context = ssl._create_unverified_context()
 face_cascade = cv2.CascadeClassifier('./haarcascades/haarcascade_frontalface_alt2.xml')
-
-def open_url(url: str) -> str:
-    # make a directory
-    if not os.path.exists('data'):
-        os.makedirs('data')
-
-    # open & save image
-    image = Image.open(urllib.request.urlopen(url, context=context))
-    image = image.convert('RGB') #if an image was blured / in an rgba format
-    image_path = './temp.jpg'
-    image.save(image_path)
-
-    return image_path
-
-def save_face(image_path: str) -> list:
-
-    # get face location
-    img = cv2.imread(image_path, 0)
-    faces = face_cascade.detectMultiScale(img, scaleFactor=1.5, minNeighbors=5)
-
-    roi_list = [] # roi = region of interest (i.e the face only)
-    index = 1
-    for x, y, w, h in faces:
-        roi = img[y:y+h, x:x+w] # get only the face region
-        roi = cv2.resize(roi, (150, 150))
-        curr = time.gmtime()
-        label = f'./data/{index}_{curr.tm_hour}_{curr.tm_min}_{curr.tm_sec}.jpg'
-        cv2.imwrite(label, roi)
-        roi_list.append(label)
-        index += 1
-    
-    return roi_list
-
-def analyse_user_face(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-    if faces == []:
-        return []
-    #TODO: return a list of faces and their respective scores inistead
-    for x, y, w, h in faces:
-        roi = gray[y:y+h, x:x+w] # get only the face region
-        roi = cv2.resize(roi, (150, 150))
-        score = predict(roi)
-
-        # add rectangle and label
-        img = cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), thickness=10)
-        img = cv2.putText(img, str(round(score, 1)), (x + 75, y + h + 150), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(255,255,255), thickness=5)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        return img, score
-
 client = vision.ImageAnnotatorClient()
-
 
 def distance(pos1: dict, pos2: dict):
     # sqrt((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2)
@@ -85,14 +35,7 @@ def distance(pos1: dict, pos2: dict):
     return math.sqrt(sqr_x + sqr_y + sqr_z)
 
 
-def get_features(image_url: str) -> list:
-    request = {
-        'image': {
-            'source': {
-                'image_uri': image_url
-                },
-            },
-        }
+def get_features(request:dict) -> list:
     response = client.annotate_image(request)
     response = MessageToDict(response)
     
@@ -151,7 +94,32 @@ def get_numeric_feature(landmarks: list) -> list:
 
     return to_write
 
+# when users submit their picture
+# pass it to get_features for analysing
 
-#save_face(url)
-#see more https://www.youtube.com/watch?v=QSTnwsZj2yc
-# or https://medium.com/better-programming/step-by-step-face-recognition-in-images-ad0ad302058a
+def analyse_user_face(img):
+    # send request as base64 image
+    b64 = base64.b64encode(img)
+    request = {
+        'image': {
+            'content': b64
+            },
+        }
+    features = get_features(request)
+    score = predict(features)
+        
+    #TODO: return a list of faces and their respective scores inistead
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray)
+    if faces == []:
+        return []
+    for x, y, w, h in faces:
+        roi = gray[y:y+h, x:x+w] # get only the face region
+        roi = cv2.resize(roi, (150, 150))
+        score = predict(roi)
+
+        # add rectangle and label
+        img = cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), thickness=10)
+        img = cv2.putText(img, str(round(score, 1)), (x + 75, y + h + 150), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(255,255,255), thickness=5)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        return img, score

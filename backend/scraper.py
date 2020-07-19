@@ -12,7 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from time import sleep
-from face import save_face, open_url
+from face import get_features
 from predictor import train
 import numpy as np
 
@@ -35,10 +35,10 @@ class Crawler():
     
     def get_data(self):
         # make a csv file to store data
-        f = open('data.csv', 'w')
+        f = open('feature-data.csv', 'a+')
         writer = csv.writer(f)
-        writer.writerow(['retrieved_date', 'image_url', 'image_address', 'count_rating', 'avg_rating'])
         
+        # click open each entry in the subreddit
         contents = self.driver.find_elements_by_css_selector('._1poyrkZ7g36PawDueRza-J._11R7M_VOgKO1RJyRSRErT3')
         for c in contents:
             try:
@@ -55,30 +55,33 @@ class Crawler():
                 print('no image')
                 continue
 
+            # handle each image in entries
             index = 0
             for i in images:
                 src = i.get_attribute('src')
                 data[f'url{index}'] = src
-                path = open_url(src)
-                address = save_face(image_path=path)
-                data[f'address{index}'] = address
+                request = {
+                    'image': {
+                        'source': {
+                            'image_uri': src
+                            },
+                        },
+                    }
+                face_features = get_features(request=request)
+                data[f'features{index}'] = face_features
                 index += 1
             
+            # handle each comments in entry
             comments = self.driver.find_elements_by_class_name('_1qeIAgB0cPwnLhDF9XSiJM')
-
             if comments == []:
                 self.close_window()
                 continue
             count, average = self.analyse_comments(comments)
 
+            # write to csv -> url, features, number of rating, average rating
             for i in range(0, index):
-                # not the most efficient solution
-                # but it deleted pics as if it has 0 comments
-                if count == 0:
-                    for pic in data[f'address{i}']:
-                        os.remove(pic)
-                else:
-                    self.write_to_file(writer, data[f'url{i}'], data[f'address{i}'], count, average)
+                if count != 0:
+                    self.write_to_file(writer, data[f'url{i}'], data[f'features{i}'], count, average)
             self.close_window()
         f.close()
 
@@ -119,13 +122,16 @@ class Crawler():
             return 0, 0
 
 
-    def write_to_file(self, writer, url: str, encoding: list, count: int, avg: float):
-        #   date, image_url, image_encoding, count_rating, avg_rating
+    def write_to_file(self, writer, url: str, features: list, count: int, avg: float):
+        #   date, image_url, features, count_rating, avg_rating
         date = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
-        if url == '' or encoding == [] or count == 0 or avg == 0.0:
+        if url == '' or features == [] or count == 0 or avg == 0.0:
             return
-        for e in encoding:
-            writer.writerow([date, url, e, count, avg])
+        
+        data = list()
+        data += [date, url, count, avg]
+        data += features
+        writer.writerow(data)
 
     def close_window(self):
         try:

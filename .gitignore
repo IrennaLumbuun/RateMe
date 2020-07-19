@@ -3,10 +3,7 @@ env
 .DS_Store
 todo.txt
 formula.txt
-
-# broken predictor
-train.py
-model.py
+unused
 
 # user data
 data
