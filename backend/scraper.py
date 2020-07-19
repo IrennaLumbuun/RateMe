@@ -10,7 +10,7 @@ from datetime import datetime
 import urllib.request
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from time import sleep
 from face import save_face, open_url
 from predictor import train
@@ -41,13 +41,18 @@ class Crawler():
         
         contents = self.driver.find_elements_by_css_selector('._1poyrkZ7g36PawDueRza-J._11R7M_VOgKO1RJyRSRErT3')
         for c in contents:
-            c.click()
+            try:
+                c.click()
+            except ElementNotInteractableException:
+                print('image not interactable')
+                continue
 
             data = {}
             images = self.driver.find_elements_by_css_selector('div._3Oa0THmZ3f5iZXAQ0hBJ0k > a > img')
             #if there is no images, go to other content
             if images == []:
                 self.close_window()
+                print('no image')
                 continue
 
             index = 0
@@ -156,4 +161,4 @@ while True:
 
 crawler.driver.execute_script("window.scrollTo(0, 0);")
 crawler.get_data()
-train()
+#train()

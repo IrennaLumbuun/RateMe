@@ -12,8 +12,41 @@
     <img src='data:image/jpeg;base64,{{img}}' 
         class='col-xs-12 col-sm-8 col-md-8 text-center'>
 
+    <p>You got a {{score}}</p>
     <h2>What the score means:</h2>
-    <!--Todo: a bunch of if statements here-->
+    {% if {{score}} == 10 %}
+        <p>There is something wrong with the algorithm. This level is unattainable.</p>
+    {% endif %}
+    {% if {{score}} >= 9.0 %}
+        <p>Top 0.1% - 0.2%. Extremely attractive, top model tier. Extremely rare. This range (9.0 - 10.0) consists of best-looking people, with top-tier facial feature. Supermodels and actors/actresses can be found in this category</p>
+    {% endif %}
+    {% if {{score}} >= 8.0 %}
+        <p>Top 0.5% - 1%. Uncommonly seen. Very attractive, model tier. People with this score are attractive without makeup and have high facial aesthetics. Models and actor/actresses can be found in this category.</p>
+    {% endif %}
+    {% if {{score}} >= 7.0 %}
+        <p>Top 2%. Attractive. Somewhat uncommon. People with this score are the attractive people you see on a day to day asis. They stands out in the crowd and may lead a succesful instagram model/influencer career.</p>
+    {% endif %}
+    {% if {{score}} >= 6.0 %}
+        <p>Top 10%. Well above average, fairly good looking. People with this score are good-looking, with mostly positive facial features. They have a healthy skin and hair, harmonious face. Overall, they are better looking than average</p>
+    {% endif %}
+    {% if {{score}} >= 5.5 %}
+        <p>Top 33%. Only 1 out of 3 people has this score (or higher). People with this score are above average. They are considered better looking than average.</p>
+    {% endif %}
+    {% if {{score}} >= 5 %}
+        <p>The majority of the population fall in this range. Think of a normal curve, people with a score between 4.5-5.5 are somewhat at the peak of the curve.</p>
+    {% endif %}
+    {% if {{score}} >= 4 %}
+        <p>A decent amount of people fall into this range. People with this score are NOT considered ugly, but also are not head turning attractive. Most people you see on the street might fall into this category.</p>
+    {% endif %}
+    {% if {{score}} >= 3 %}
+        <p>People in this category does not follow conventional beauty standard. To see celebrities that with this score, see 'how it works' section.</p>
+    {% endif %}
+    {% if {{score}} >= 1 %}
+        <p>There is something wrong with the algorithm. The data collected do NOT have people with these scores, and it's practically impossible to have this low of a score. Try another picture.</p>
+    {% endif %}
+    {% if {{score}} >= 0 %}
+        <p>There is something wrong with the algorithm. This level is unattainable.</p>
+    {% endif %}
 </section>
 
 {% endblock %}

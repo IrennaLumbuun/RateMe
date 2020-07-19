@@ -2,6 +2,7 @@ env
 .vscode
 .DS_Store
 todo.txt
+formula.txt
 
 # broken predictor
 train.py
@@ -10,3 +11,6 @@ model.py
 # user data
 data
 data.csv
+
+# secret
+face-feature-bca34d38ae00.json
