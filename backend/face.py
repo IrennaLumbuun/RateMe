@@ -1,18 +1,13 @@
 from PIL import Image
-import urllib.request
 import ssl
+import sys
 import cv2
-import time
-import os
-import io
-from predictor import predict
+from .predictor import predict
 import math
-import base64
+import numpy as np
 
-import importlib
 # Imports the Google Cloud client library
 from google.cloud import vision
-from google.cloud.vision import types
 from google.protobuf.json_format import MessageToDict
 
 '''
@@ -23,7 +18,8 @@ context = ssl._create_unverified_context()
 face_cascade = cv2.CascadeClassifier('./haarcascades/haarcascade_frontalface_alt2.xml')
 client = vision.ImageAnnotatorClient()
 
-def distance(pos1: dict, pos2: dict):
+
+def distance(pos1: dict, pos2: dict) -> float:
     # sqrt((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2)
     dis_x = pos2.get('x') - pos1.get('x')
     sqr_x = dis_x * dis_x
@@ -35,19 +31,23 @@ def distance(pos1: dict, pos2: dict):
     return math.sqrt(sqr_x + sqr_y + sqr_z)
 
 
-def get_features(request:dict) -> list:
+# given a dict of request
+# return a list of corrds and features of each face
+def get_features(request: dict):
     response = client.annotate_image(request)
     response = MessageToDict(response)
-    
-    # assume there's only 1 face per picture
-    # faceAnnotations always return a list of face
-    # take the first one only
-    try:
-        landmarks = response['faceAnnotations'][0]['landmarks']
-    except:
-        return list()
-    
-    return get_numeric_feature(landmarks)
+    faces = response['faceAnnotations']
+    list_coords = list()
+    list_features = list()
+    for face in faces:
+        try:
+            list_features.append(get_numeric_feature(face['landmarks']))
+            list_coords.append(face['fdBoundingPoly']['vertices'])
+        except:
+            print(response)
+            return list()
+
+    return list_coords, list_features
 
 
 def get_numeric_feature(landmarks: list) -> list:
@@ -58,7 +58,7 @@ def get_numeric_feature(landmarks: list) -> list:
         index += 1
 
     to_write = list()
-    
+
     # ratio of left eye to mid & right eye to mid
     left_eye_to_mid = distance(pos['left_eye'], pos['midpoint_between_eyes'])
     right_eye_to_mid = distance(pos['right_eye'], pos['midpoint_between_eyes'])
@@ -94,32 +94,52 @@ def get_numeric_feature(landmarks: list) -> list:
 
     return to_write
 
+
 # when users submit their picture
 # pass it to get_features for analysing
-
 def analyse_user_face(img):
-    # send request as base64 image
-    b64 = base64.b64encode(img)
+    # the predicton is gonna call read() on img, 
+    # which results in it being empty
+    img_copy = img 
+
+    b64_img = img.read()
     request = {
         'image': {
-            'content': b64
-            },
+            'content': b64_img
+        },
+        'features': [{
+                'type': vision.enums.Feature.Type.FACE_DETECTION
+            }]
         }
-    features = get_features(request)
-    score = predict(features)
-        
-    #TODO: return a list of faces and their respective scores inistead
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray)
-    if faces == []:
-        return []
-    for x, y, w, h in faces:
-        roi = gray[y:y+h, x:x+w] # get only the face region
-        roi = cv2.resize(roi, (150, 150))
-        score = predict(roi)
 
-        # add rectangle and label
-        img = cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), thickness=10)
-        img = cv2.putText(img, str(round(score, 1)), (x + 75, y + h + 150), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(255,255,255), thickness=5)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        return img, score
+    # get a list of coordinates & features for each face
+    # draw squares and write scores on each face
+    list_coord, list_features = get_features(request)
+    img = Image.open(img_copy)
+    img = np.array(img)
+
+    for i in range(0, len(list_features)):
+        score = predict(list_features[i])
+        coord = list_coord[i]
+
+        upper_left = [sys.maxsize, sys.maxsize]
+        bottom_right = [0, 0]
+
+        # coordinates returned from google vision may not contain
+        # both x and y
+        # so we have to find it manually
+        for c in coord:
+            if c.get('x', sys.maxsize) < upper_left[0]:
+                upper_left[0] = c['x']
+            if c.get('x', 0) > bottom_right[0]:
+                bottom_right[0] = c['x']
+            if c.get('y', sys.maxsize) < upper_left[1]:
+                upper_left[1] = c['y']
+            if c.get('y', 0) > bottom_right[1]:
+                bottom_right[1] = c['y']
+
+        # TODO: scale font size based on pic size
+        img = cv2.rectangle(img, tuple(upper_left), tuple(bottom_right), (255, 255, 255), thickness=10)
+        img = cv2.putText(img, str(round(score, 1)), (upper_left[0] + 75, bottom_right[1] + 150), cv2.FONT_HERSHEY_SIMPLEX, 5, color=(255,255,255), thickness=5)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return score, img

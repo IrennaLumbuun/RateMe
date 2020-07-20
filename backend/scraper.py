@@ -67,8 +67,8 @@ class Crawler():
                             },
                         },
                     }
-                face_features = get_features(request=request)
-                data[f'features{index}'] = face_features
+                _, face_features = get_features(request=request)
+                data[f'features{index}'] = face_features[0]
                 index += 1
             
             # handle each comments in entry
@@ -127,7 +127,7 @@ class Crawler():
         date = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
         if url == '' or features == [] or count == 0 or avg == 0.0:
             return
-        
+
         data = list()
         data += [date, url, count, avg]
         data += features
@@ -141,8 +141,8 @@ class Crawler():
         else:
             btn.click()
         sleep(1)
-    
-            
+
+
 crawler = Crawler()
 crawler.driver.get(url)
 
