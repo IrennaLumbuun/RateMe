@@ -5,7 +5,7 @@ Most people falls on the scale 4.5-5.5 (think of the normal curve)
 ## How it was built
 I first built a webscraper to collect images from r/TrueRateMe, encoded them, and get the average rating. Then, I built a linear regression ML program to make a model and predict another set of data
 
-On the front-end side of things, this site is built and served using *a front end technology*. It lets users upload their picture, that is later passed on to the server. 
+On the front-end side of things, this site is built and served using *<placeholder - I haven't got to this part yet>*. It lets users upload their picture, that is later passed on to the server. 
 
 ## The Margin of Error
 This program is still on a very early stage of development. That being said, there are many possible source of error that makes the prediction inaccurate. These are what I can think of at the top of my head
