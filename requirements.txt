@@ -70,7 +70,7 @@ tensorflow-estimator==2.2.0
 termcolor==1.1.0
 threadpoolctl==2.1.0
 tqdm==4.47.0
-Twisted==20.3.0
+Twisted==22.4.0
 union==0.1.10
 urllib3==1.25.9
 w3lib==1.22.0
